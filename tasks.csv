@@ -1,0 +1,12 @@
+id,project_id,name,description,status,assignee,notes,updated_date,created_at
+1,1,Design homepage mockup,Create wireframes and visual design,In Progress,Alice,Initial mockups completed successfully.... waiting for more... one more,2026-03-13,2026-03-01
+2,1,Implement header navigation,Build responsive navigation menu,In Progress,Bob,,2026-03-10,2026-03-03
+3,1,Create contact form,Design and implement contact form,Not Started,,,2026-03-05,2026-03-05
+4,1,Add footer section,Create footer with links and social icons,Not Started,Alice,Will need social icons,2026-03-06,2026-03-06
+5,2,Setup development environment,Configure build tools and dependencies,Completed,Charlie,React Native setup,2026-03-05,2026-03-05
+6,2,Implement user authentication,Build login and registration system,In Progress,Bob,Using JWT tokens,2026-03-12,2026-03-07
+7,2,Create dashboard UI,Design main dashboard interface,Not Started,,,2026-03-08,2026-03-08
+8,3,Audit current database,Analyze existing database structure,Completed,Charlie,,2026-03-10,2026-03-10
+9,3,Create migration scripts,Write scripts to transfer data,In Progress,Alice,50% complete,2026-03-13,2026-03-12
+10,3,Test data integrity,Verify all data transferred correctly,Not Started,,,2026-03-13,2026-03-13
+11,1,Onboard memeber,Onboard 3 members for HGI,In Progress,,,2026-03-14,2026-03-14

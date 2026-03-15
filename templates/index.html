@@ -1,0 +1,280 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Project Task Tracker</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+            background: #1a1a2e;
+            color: #eaeaea;
+            min-height: 100vh;
+        }
+        
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 24px;
+        }
+        
+        header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 32px;
+            padding-bottom: 16px;
+            border-bottom: 1px solid #0f3460;
+        }
+        
+        h1 {
+            font-size: 1.75rem;
+            color: #eaeaea;
+        }
+        
+        .subtitle {
+            color: #a0a0a0;
+            font-size: 0.9rem;
+            margin-top: 4px;
+        }
+        
+        .btn {
+            background: #4a5568;
+            color: #fff;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 0.95rem;
+            transition: background 0.2s;
+        }
+        
+        .btn:hover {
+            background: #2d3748;
+        }
+        
+        .btn-small {
+            padding: 6px 12px;
+            font-size: 0.85rem;
+        }
+        
+        .projects-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 20px;
+        }
+        
+        .project-card {
+            background: #16213e;
+            border-radius: 12px;
+            padding: 20px;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+        
+        .project-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3);
+        }
+        
+        .project-card h3 {
+            font-size: 1.25rem;
+            margin-bottom: 8px;
+        }
+        
+        .project-card p {
+            color: #a0a0a0;
+            font-size: 0.9rem;
+            margin-bottom: 16px;
+            line-height: 1.5;
+        }
+        
+        .project-meta {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 12px;
+            font-size: 0.85rem;
+            color: #a0a0a0;
+        }
+        
+        .progress-container {
+            background: #0f3460;
+            border-radius: 6px;
+            height: 8px;
+            overflow: hidden;
+        }
+        
+        .progress-bar {
+            height: 100%;
+            background: linear-gradient(90deg, #4a5568, #718096);
+            transition: width 0.3s ease;
+        }
+        
+        .progress-label {
+            display: flex;
+            justify-content: space-between;
+            font-size: 0.8rem;
+            margin-top: 6px;
+            color: #a0a0a0;
+        }
+        
+        .card-link {
+            text-decoration: none;
+            color: inherit;
+            display: block;
+        }
+        
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.7);
+            justify-content: center;
+            align-items: center;
+            z-index: 100;
+        }
+        
+        .modal.active {
+            display: flex;
+        }
+        
+        .modal-content {
+            background: #16213e;
+            padding: 24px;
+            border-radius: 12px;
+            width: 100%;
+            max-width: 400px;
+        }
+        
+        .modal h2 {
+            margin-bottom: 16px;
+        }
+        
+        .form-group {
+            margin-bottom: 16px;
+        }
+        
+        .form-group label {
+            display: block;
+            margin-bottom: 6px;
+            font-size: 0.9rem;
+            color: #a0a0a0;
+        }
+        
+        .form-group input,
+        .form-group textarea {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #1a4a7a;
+            border-radius: 6px;
+            background: #0f3460;
+            color: #eaeaea;
+            font-size: 0.95rem;
+        }
+        
+        .form-group input:focus,
+        .form-group textarea:focus {
+            outline: none;
+            border-color: #4a5568;
+        }
+        
+        .modal-actions {
+            display: flex;
+            gap: 12px;
+            justify-content: flex-end;
+        }
+        
+        .btn-secondary {
+            background: #0f3460;
+        }
+        
+        .btn-secondary:hover {
+            background: #1a4a7a;
+        }
+        
+        footer {
+            text-align: center;
+            padding: 24px;
+            color: #a0a0a0;
+            font-size: 0.85rem;
+            margin-top: 40px;
+        }
+        
+        @media (max-width: 600px) {
+            .container {
+                padding: 16px;
+            }
+            
+            h1 {
+                font-size: 1.4rem;
+            }
+            
+            .projects-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <div>
+                <h1>Project Task Tracker</h1>
+                <p class="subtitle">Manage your projects and track task progress</p>
+            </div>
+            <button class="btn" onclick="document.getElementById('projectModal').classList.add('active')">+ New Project</button>
+        </header>
+        
+        <div class="projects-grid">
+            {% for project in projects %}
+            <a href="{{ url_for('project', project_id=project.id) }}" class="card-link">
+                <div class="project-card">
+                    <h3>{{ project.name }}</h3>
+                    <p>{{ project.description }}</p>
+                    <div class="project-meta">
+                        <span>{{ project.task_count }} tasks</span>
+                        <span>{{ project.progress }}% complete</span>
+                    </div>
+                    <div class="progress-container">
+                        <div class="progress-bar" style="width: {{ project.progress }}%"></div>
+                    </div>
+                </div>
+            </a>
+            {% endfor %}
+        </div>
+        
+        <footer>
+            &copy; 2026 Project Task Tracker
+        </footer>
+    </div>
+    
+    <div id="projectModal" class="modal">
+        <div class="modal-content">
+            <h2>Add New Project</h2>
+            <form action="{{ url_for('add_project') }}" method="POST">
+                <div class="form-group">
+                    <label for="name">Project Name</label>
+                    <input type="text" id="name" name="name" required>
+                </div>
+                <div class="form-group">
+                    <label for="description">Description</label>
+                    <textarea id="description" name="description" rows="3"></textarea>
+                </div>
+                <div class="modal-actions">
+                    <button type="button" class="btn btn-secondary" onclick="document.getElementById('projectModal').classList.remove('active')">Cancel</button>
+                    <button type="submit" class="btn">Create Project</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</body>
+</html>

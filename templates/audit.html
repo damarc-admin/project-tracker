@@ -1,0 +1,244 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Audit History - {{ task.name }}</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+            background: #1a1a2e;
+            color: #eaeaea;
+            min-height: 100vh;
+        }
+        
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 24px;
+        }
+        
+        header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 32px;
+            padding-bottom: 16px;
+            border-bottom: 1px solid #0f3460;
+        }
+        
+        .header-left {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+        
+        .back-btn {
+            background: #0f3460;
+            color: #eaeaea;
+            border: none;
+            width: 40px;
+            height: 40px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 1.2rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-decoration: none;
+            transition: background 0.2s;
+        }
+        
+        .back-btn:hover {
+            background: #1a4a7a;
+        }
+        
+        h1 {
+            font-size: 1.75rem;
+        }
+        
+        .subtitle {
+            color: #a0a0a0;
+            font-size: 0.9rem;
+            margin-top: 4px;
+        }
+        
+        .task-info {
+            background: #16213e;
+            padding: 20px;
+            border-radius: 12px;
+            margin-bottom: 24px;
+        }
+        
+        .task-info h2 {
+            font-size: 1.3rem;
+            margin-bottom: 8px;
+        }
+        
+        .task-info p {
+            color: #a0a0a0;
+        }
+        
+        .audit-list {
+            background: #16213e;
+            border-radius: 12px;
+            overflow: hidden;
+        }
+        
+        .audit-item {
+            padding: 16px 20px;
+            border-bottom: 1px solid #0f3460;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+        
+        .audit-item:last-child {
+            border-bottom: none;
+        }
+        
+        .audit-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .audit-field {
+            font-weight: 500;
+            color: #e94560;
+        }
+        
+        .audit-date {
+            font-size: 0.85rem;
+            color: #a0a0a0;
+        }
+        
+        .audit-changes {
+            display: flex;
+            gap: 8px;
+            align-items: center;
+            font-size: 0.9rem;
+        }
+        
+        .audit-old {
+            color: #a0a0a0;
+            text-decoration: line-through;
+        }
+        
+        .audit-arrow {
+            color: #28a745;
+        }
+        
+        .audit-new {
+            color: #28a745;
+        }
+        
+        .audit-by {
+            font-size: 0.85rem;
+            color: #a0a0a0;
+        }
+        
+        .empty-state {
+            text-align: center;
+            padding: 48px 24px;
+            color: #a0a0a0;
+        }
+        
+        .empty-state h3 {
+            margin-bottom: 8px;
+            color: #eaeaea;
+        }
+        
+        footer {
+            text-align: center;
+            padding: 24px;
+            color: #a0a0a0;
+            font-size: 0.85rem;
+            margin-top: 40px;
+        }
+        
+        @media (max-width: 600px) {
+            .container {
+                padding: 16px;
+            }
+            
+            .audit-header {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 4px;
+            }
+            
+            .audit-changes {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <div class="header-left">
+                <a href="{{ url_for('project', project_id=task.project_id) }}" class="back-btn">&larr;</a>
+                <div>
+                    <h1>Audit History</h1>
+                    <p class="subtitle">Change tracking for tasks</p>
+                </div>
+            </div>
+        </header>
+        
+        <div class="task-info">
+            <h2>{{ task.name }}</h2>
+            <p>{{ task.description or 'No description' }}</p>
+        </div>
+        
+        <h2 style="margin-bottom: 16px;">Change History</h2>
+        
+        {% if audit_history %}
+        <div class="audit-list">
+            {% for audit in audit_history %}
+            <div class="audit-item">
+                <div class="audit-header">
+                    <span class="audit-field">{{ audit.field_changed }}</span>
+                    <span class="audit-date">{{ audit.changed_at }}</span>
+                </div>
+                <div class="audit-changes">
+                    {% if audit.old_value %}
+                    <span class="audit-old">{{ audit.old_value }}</span>
+                    {% else %}
+                    <span class="audit-old">(empty)</span>
+                    {% endif %}
+                    <span class="audit-arrow">&rarr;</span>
+                    {% if audit.new_value %}
+                    <span class="audit-new">{{ audit.new_value }}</span>
+                    {% else %}
+                    <span class="audit-new">(empty)</span>
+                    {% endif %}
+                </div>
+                <div class="audit-by">
+                    Changed by: {{ audit.changed_by or 'Unknown' }}
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+        {% else %}
+        <div class="audit-list">
+            <div class="empty-state">
+                <h3>No audit history</h3>
+                <p>No changes have been recorded yet</p>
+            </div>
+        </div>
+        {% endif %}
+        
+        <footer>
+            &copy; 2026 Project Task Tracker
+        </footer>
+    </div>
+</body>
+</html>
